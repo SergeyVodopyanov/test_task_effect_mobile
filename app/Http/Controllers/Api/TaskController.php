@@ -14,18 +14,27 @@ class TaskController
 
     public function index(): JsonResponse
     {
+        $collection = $this->service->index();
+
+        if ($collection->isEmpty()) {
+            return response()->json([], Response::HTTP_NO_CONTENT);
+        }
+
         return response()->json(
-            $this->service->index(),
+            $collection,
             Response::HTTP_OK
         );
     }
 
     public function show(int $id)
     {
-        return response()->json(
-            $this->service->show($id),
-            Response::HTTP_OK
-        );
+        $result  = $this->service->show($id);
+
+        if ($result) {
+            return response()->json($result, Response::HTTP_OK);
+        }
+
+        return response()->json([], Response::HTTP_NOT_FOUND);
     }
 
     public function store(StoreRequest $request): JsonResponse
@@ -38,17 +47,23 @@ class TaskController
 
     public function update(int $id, UpdateRequest $request): JsonResponse
     {
-        return response()->json(
-            $this->service->update($id, $request->validated()),
-            Response::HTTP_OK
-        );
+        $result  = $this->service->update($id, $request->validated());
+
+        if ($result) {
+            return response()->json($result, Response::HTTP_OK);
+        }
+
+        return response()->json(false, Response::HTTP_NOT_FOUND);
     }
 
     public function destroy(int $id): JsonResponse
     {
-        return response()->json(
-            $this->service->destroy($id),
-            Response::HTTP_OK
-        );
+        $result  = $this->service->destroy($id);
+
+        if ($result) {
+            return response()->json(true, Response::HTTP_OK);
+        }
+
+        return response()->json(false, Response::HTTP_NOT_FOUND);
     }
 }

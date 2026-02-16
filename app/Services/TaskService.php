@@ -14,9 +14,9 @@ class TaskService
         return $tasks;
     }
 
-    public function show(int $id): Task
+    public function show(int $id): Task|null
     {
-        $task = Task::findOrFail($id);
+        $task = Task::find($id);
 
         return $task;
     }
@@ -28,20 +28,29 @@ class TaskService
         return $task->fresh();
     }
 
-    public function update(int $id, array $data): Task
+    public function update(int $id, array $data): Task|null
     {
-        $task = Task::findOrFail($id);
+        $task = Task::find($id);
 
-        $task->update($data);
+        if ($task) {
+            $task->update($data);
 
-        return $task->fresh();
+            return $task->fresh();
+        }
+
+        return null;
     }
 
     public function destroy(int $id): bool
     {
-        $task = Task::findOrFail($id);
-        $task->delete();
+        $task = Task::find($id);
 
-        return true;
+        if ($task) {
+            $task->delete();
+
+            return true;
+        }
+
+        return false;
     }
 }
